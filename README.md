@@ -53,6 +53,10 @@ Para saber mais sobre o `puro`, clique [aqui](https://puro.dev/reference/manual/
 No meu caso, bastou uma instalação padrão, mas caso eu encontre bons vídeos, vou deixa-los nesta seção
 
 [How to Install Flutter on Ubuntu 24.04 LTS Linux | Android Studio](https://www.youtube.com/watch?v=mtqTnGAAHw0)
+![Onde Configurar o SDK Manager](images/sdk-manager-location.png)
+![Configuração usada no SDK Manager do Android Studio](images/android-studio-sdk-manager-config.png)
+
+- `sdkmanager --install "cmdline-tools;latest`
 
 ## Comandos Base
 
@@ -108,4 +112,6 @@ Linux (desktop)              • linux         • linux-x64      • Ubuntu 24.
 Chrome (web)                 • chrome        • web-javascript • Google Chrome 132.0.6834.159
 ```
 
-use `flutter run -d emulator-5554` trocando `emulator-5554` pelo id do seu emulador que aparecer
+use `flutter run -d emulator-5554` trocando `emulator-5554` pelo id do seu emulador que aparecer.
+
+Você pode usar `R` no terminal para dar um `reload` no seu app.
