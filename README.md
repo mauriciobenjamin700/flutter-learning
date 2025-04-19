@@ -115,3 +115,12 @@ Chrome (web)                 • chrome        • web-javascript • Google Chr
 use `flutter run -d emulator-5554` trocando `emulator-5554` pelo id do seu emulador que aparecer.
 
 Você pode usar `R` no terminal para dar um `reload` no seu app.
+
+Algumas teclas que podem ser usadas no terminal enquanto o app está em execução:
+
+- r Hot reload. 🔥🔥🔥
+- R Hot restart.
+- h List all available interactive commands.
+- d Detach (terminate "flutter run" but leave application running).
+- c Clear the screen
+- q Quit (terminate the application on the device).
