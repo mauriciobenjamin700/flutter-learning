@@ -228,6 +228,121 @@ Liste os emuladores disponíveis:
 flutter emulators
 ```
 
+Caso se depare com este erro ou semelhante:
+
+```bash
+mauriciobenjamin700@PC:~/projects/my/yugioh_lp_calculator$ flutter emulators --launch xyz
+The Android emulator exited with code 1 during startup
+Android emulator stderr:
+ProbeKVM: This user doesn't have permissions to use KVM (/dev/kvm).
+The KVM line in /etc/group is: [kvm:x:993:]
+If the current user has KVM permissions,
+the KVM line in /etc/group should end with ":" followed by your username.
+If we see LINE_NOT_FOUND, the kvm group may need to be created along with permissions:
+    sudo groupadd -r kvm
+    # Then ensure /lib/udev/rules.d/50-udev-default.rules contains something like:
+    # KERNEL=="kvm", GROUP="kvm", MODE="0660"
+    # and then run:
+    sudo gpasswd -a $USER kvm
+If we see kvm:... but no username at the end, running the following command may allow KVM access:
+    sudo gpasswd -a $USER kvm
+You may need to log out and back in for changes to take effect.
+Address these issues and try again.
+mauriciobenjamin
+```
+
+Este erro é relacionado às **permissões do KVM** (Kernel-based Virtual Machine) no seu sistema WSL/Linux. O emulador Android precisa do KVM para funcionar com aceleração de hardware.
+
+## Solução Passo a Passo
+
+### 1. Primeiro, verifique se você está no grupo KVM:
+```bash
+groups $USER
+```
+
+### 2. Adicione seu usuário ao grupo KVM:
+```bash
+sudo gpasswd -a $USER kvm
+```
+
+### 3. Verifique se o grupo foi criado corretamente:
+```bash
+cat /etc/group | grep kvm
+```
+Deve mostrar algo como: `kvm:x:993:mauriciobenjamin700`
+
+### 4. Ajuste as permissões do dispositivo KVM:
+```bash
+sudo chown root:kvm /dev/kvm
+sudo chmod 660 /dev/kvm
+```
+
+### 5. **IMPORTANTE**: Faça logout e login novamente ou reinicie o WSL:
+
+**Para WSL:**
+```bash
+# No PowerShell/CMD do Windows
+wsl --shutdown
+# Depois reabra o WSL
+```
+
+**Para Linux nativo:**
+```bash
+# Faça logout e login novamente
+```
+
+### 6. Verifique se as permissões estão corretas:
+```bash
+ls -la /dev/kvm
+groups $USER
+```
+
+Deve mostrar:
+- `/dev/kvm` com permissões `crw-rw----` e grupo `kvm`
+- Seu usuário listado no grupo `kvm`
+
+### 7. Teste o emulador novamente:
+```bash
+flutter emulators --launch xyz
+```
+
+## Alternativa: Emulador sem Aceleração de Hardware
+
+Se o KVM ainda não funcionar no WSL, você pode tentar executar o emulador sem aceleração:
+
+```bash
+# Defina variáveis de ambiente para forçar software rendering
+export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
+export ANDROID_SDK_ROOT=$HOME/Android
+
+# Execute o emulador diretamente
+$HOME/Android/tools/emulator -avd xyz -no-accel -gpu swiftshader_indirect
+```
+
+## Verificação Final
+
+Depois de ajustar as permissões:
+```bash
+# Verifique se está no grupo KVM
+id -nG | grep kvm
+
+# Teste o KVM
+ls -la /dev/kvm
+
+# Tente o Flutter novamente
+flutter emulators --launch xyz
+```
+
+## Nota Importante para WSL
+
+No WSL2, às vezes o KVM pode não funcionar perfeitamente. Se continuar com problemas, considere:
+
+1. **Usar um emulador físico** (celular conectado via USB)
+2. **Usar o emulador do Android Studio** diretamente no Windows
+3. **Testar no navegador** com `flutter run -d web-server`
+
+Me informe se o problema persistir após seguir esses passos!
+
 ## Problemas Comuns no WSL
 
 Pode precisar de configurações adicionais:
