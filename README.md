@@ -124,3 +124,135 @@ Algumas teclas que podem ser usadas no terminal enquanto o app está em execuç�
 - d Detach (terminate "flutter run" but leave application running).
 - c Clear the screen
 - q Quit (terminate the application on the device).
+
+## Caso esteja no WSL
+
+Atenção: Lembre-se de trocar <user> pelo seu usuário linux.
+
+- `sudo apt install google-android-platform-tools-installer`
+- `sudo apt update`
+- `sudo apt install clang cmake ninja-build libgtk-3-dev`
+- `cd /home/<user>/`
+- sudo apt-get install unzip
+- wget https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
+- unzip sdk-tools-linux-4333796.zip -d Android
+- rm sdk-tools-linux-4333796.zip
+- sudo apt-get install -y lib32z1 openjdk-8-jdk
+- export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+- export PATH=$PATH:$JAVA_HOME/bin
+- printf "\n\nexport JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64\nexport PATH=\$PATH:\$JAVA_HOME/bin" >> ~/.bashrc
+- cd Android/tools/bin
+- ./sdkmanager "platform-tools" "platforms;android-26" "build-tools;26.0.3"
+- export ANDROID_HOME=/home/<user>/Android
+- export PATH=$PATH:$ANDROID_HOME/tools
+- export PATH=$PATH:$ANDROID_HOME/platform-tools
+- printf "\n\nexport ANDROID_HOME=/home/<user>/Android\nexport PATH=\$PATH:\$ANDROID_HOME/tools\nexport PATH=\$PATH:\$ANDROID_HOME/platform-tools" >> ~/.bashrc
+- android update sdk --no-ui
+- sudo apt-get install gradle
+- gradle -v
+- adb start-server
+
+Use este comando para ver os emuladores disponíveis
+
+```bash
+cd ~/Android/tools/bin
+./sdkmanager --list | grep "system-images"
+```
+
+Instale uma imagem de sistema mais recente e compatível:
+
+```bash
+# Para arquitetura x86_64 (recomendado)
+./sdkmanager "system-images;android-30;google_apis_playstore;x86_64"
+
+# Ou para x86 (se necessário)
+./sdkmanager "system-images;android-30;google_apis_playstore;x86"
+
+# Também instale o Android 28 como alternativa
+./sdkmanager "system-images;android-28;google_apis_playstore;x86_64"
+```
+
+Sempre aceite as licenças solicitadas
+
+```bash
+./sdkmanager --licenses
+```
+
+Verifique se as variáveis de ambiente estão corretas:
+
+```bash
+echo $ANDROID_HOME
+echo $PATH
+```
+
+Se não estiverem definidas, adicione ao seu ~/.bashrc:
+
+```bash
+export ANDROID_HOME=$HOME/Android
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+```
+
+Se não estiverem definidas, adicione ao seu `~/.bashrc`:
+
+```bash
+export ANDROID_HOME=$HOME/Android
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+```
+
+Depois execute:
+
+```bash
+source ~/.bashrc
+```
+
+Agora tente criar o emulador novamente:
+
+```bash
+flutter emulators --create --name xyz
+```
+
+Se ainda não funcionar, crie manualmente usando avdmanager:
+
+```bash
+cd ~/Android/tools/bin
+./avdmanager create avd -n xyz -k "system-images;android-30;google_apis_playstore;x86_64"
+```
+
+Liste os emuladores disponíveis:
+
+```bash
+flutter emulators
+```
+
+## Problemas Comuns no WSL
+
+Pode precisar de configurações adicionais:
+
+1. **Permissões KVM** (já feito no seu guia):
+```bash
+sudo chown $USER /dev/kvm
+```
+
+2. **Variáveis de ambiente para GPU**:
+```bash
+export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
+```
+
+## Teste Final
+
+Depois de instalar as imagens de sistema, teste:
+```bash
+flutter doctor -v
+flutter emulators
+```
+
+Isso deve mostrar os emuladores disponíveis e você poderá executar um com:
+```bash
+flutter emulators --launch xyz
+```
+
+Se continuar com problemas, me informe a saída dos comandos `flutter doctor -v` e `./sdkmanager --list | grep "system-images"` para um diagnóstico mais específico.
