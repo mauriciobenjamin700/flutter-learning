@@ -255,31 +255,36 @@ Este erro é relacionado às **permissões do KVM** (Kernel-based Virtual Machin
 
 ## Solução Passo a Passo
 
-### 1. Primeiro, verifique se você está no grupo KVM:
+### 1. Primeiro, verifique se você está no grupo KVM
+
 ```bash
 groups $USER
 ```
 
-### 2. Adicione seu usuário ao grupo KVM:
+### 2. Adicione seu usuário ao grupo KVM
+
 ```bash
 sudo gpasswd -a $USER kvm
 ```
 
-### 3. Verifique se o grupo foi criado corretamente:
+### 3. Verifique se o grupo foi criado corretamente
+
 ```bash
 cat /etc/group | grep kvm
 ```
 Deve mostrar algo como: `kvm:x:993:mauriciobenjamin700`
 
-### 4. Ajuste as permissões do dispositivo KVM:
+### 4. Ajuste as permissões do dispositivo KVM
+
 ```bash
 sudo chown root:kvm /dev/kvm
 sudo chmod 660 /dev/kvm
 ```
 
-### 5. **IMPORTANTE**: Faça logout e login novamente ou reinicie o WSL:
+### 5. **IMPORTANTE**: Faça logout e login novamente ou reinicie o WSL
 
 **Para WSL:**
+
 ```bash
 # No PowerShell/CMD do Windows
 wsl --shutdown
@@ -287,21 +292,25 @@ wsl --shutdown
 ```
 
 **Para Linux nativo:**
+
 ```bash
 # Faça logout e login novamente
 ```
 
 ### 6. Verifique se as permissões estão corretas:
+
 ```bash
 ls -la /dev/kvm
 groups $USER
 ```
 
 Deve mostrar:
+
 - `/dev/kvm` com permissões `crw-rw----` e grupo `kvm`
 - Seu usuário listado no grupo `kvm`
 
 ### 7. Teste o emulador novamente:
+
 ```bash
 flutter emulators --launch xyz
 ```
@@ -322,7 +331,9 @@ $HOME/Android/tools/emulator -avd xyz -no-accel -gpu swiftshader_indirect
 ## Verificação Final
 
 Depois de ajustar as permissões:
+
 ```bash
+
 # Verifique se está no grupo KVM
 id -nG | grep kvm
 
@@ -348,11 +359,13 @@ Me informe se o problema persistir após seguir esses passos!
 Pode precisar de configurações adicionais:
 
 1. **Permissões KVM** (já feito no seu guia):
+
 ```bash
 sudo chown $USER /dev/kvm
 ```
 
 2. **Variáveis de ambiente para GPU**:
+
 ```bash
 export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 ```
@@ -360,14 +373,18 @@ export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 ## Teste Final
 
 Depois de instalar as imagens de sistema, teste:
+
 ```bash
 flutter doctor -v
 flutter emulators
 ```
 
 Isso deve mostrar os emuladores disponíveis e você poderá executar um com:
+
 ```bash
 flutter emulators --launch xyz
 ```
 
 Se continuar com problemas, me informe a saída dos comandos `flutter doctor -v` e `./sdkmanager --list | grep "system-images"` para um diagnóstico mais específico.
+
+Caso queira saber mais, leia nossas [docs](./docs/) para mais dicas
